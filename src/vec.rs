@@ -106,6 +106,18 @@ impl Mul<Vector> for Vector {
     }
 }
 
+impl Mul<Vector> for f64 {
+    type Output = Vector;
+
+    fn mul(self, other: Vector) -> Vector {
+        Vector {
+            x: self * other.x(),
+            y: self * other.y(),
+            z: self * other.z(),
+        }
+    }
+}
+
 impl Mul<f64> for Vector {
     type Output = Vector;
 
@@ -214,5 +226,63 @@ mod tests  {
         let d = p.distance(&q);
         let expected = (0.25 + 0.09 + 0.01 as f64).sqrt();
         assert_approx_eq!(d, expected);
+    }
+
+    #[test]
+    fn test_partial_eq() {
+        let v1 = Vector::new(1.0, 2.0, 3.0);
+        let v2 = Vector::new(1.0, 2.0, 3.0);
+        assert_eq!(v1, v2);
+    }
+
+    #[test]
+    fn test_add() {
+        let v1 = Vector::new(1.0, 2.0, 3.0);
+        let v2 = Vector::new(4.0, 3.0, 2.0);
+        assert_eq!(v1 + v2, Vector::new(5.0, 5.0, 5.0));
+    }
+
+    #[test]
+    fn test_sub() {
+        let v1 = Vector::new(5.0, 4.0, 3.0);
+        let v2 = Vector::new(4.0, 3.0, 2.0);
+        assert_eq!(v1 - v2, Vector::new(1.0, 1.0, 1.0));
+    }
+
+    #[test]
+    fn test_neg() {
+        let v1 = Vector::new(1.0, 1.0, 1.0);
+        assert_eq!(-v1, Vector::new(-1.0, -1.0, -1.0));
+    }
+
+    #[test]
+    fn test_mul_vector() {
+        let v1 = Vector::new(1.0, 2.0, 3.0);
+        let v2 = Vector::new(4.0, 5.0, 6.0);
+        assert_eq!(v1 * v2, Vector::new(4.0, 10.0, 18.0));
+    }
+
+    #[test]
+    fn test_mul_scalar() {
+        let v1 = Vector::new(1.0, 2.0, 3.0);
+        let s: f64 = 2.5;
+        let expected = Vector::new(2.5, 5.0, 7.5);
+        assert_eq!(v1 * s, expected);
+        assert_eq!(s * v1, expected);
+    }
+
+    #[test]
+    fn test_div_vector() {
+        let v1 = Vector::new(1.0, 2.0, 3.0);
+        let v2 = Vector::new(4.0, 8.0, 6.0);
+        assert_eq!(v1 / v2, Vector::new(0.25, 0.25, 0.5));
+    }
+
+    #[test]
+    fn test_div_scalar() {
+        let v1 = Vector::new(1.0, 2.0, 3.0);
+        let s: f64 = 2.0;
+        let expected = Vector::new(0.5, 1.0, 1.5);
+        assert_eq!(v1 / s, expected);
     }
 }
