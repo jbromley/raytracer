@@ -1,0 +1,7 @@
+#+title: Ray Tracing in One Weekend
+#+author: J. Bromley
+#+date: January 6, 2022
+
+This project is my attempt to implement a raytracer as described in [[https://raytracing.github.io/books/RayTracingInOneWeekend.html][Ray Tracing
+in One Weekend]] in Rust. This is my first attempt at a non-trivial program in
+Rust, so we'll see how it goes.
