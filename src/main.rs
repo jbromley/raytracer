@@ -1,3 +1,5 @@
+mod vec;
+
 fn main() {
     let image_width = 256;
     let image_height = 256;
@@ -17,5 +19,6 @@ fn main() {
 
             println!("{} {} {}", r, g, b);
         }
+        eprintln!("{} scan lines remaining", y);
     }
 }
