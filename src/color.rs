@@ -1,6 +1,6 @@
 use std::cmp::PartialEq;
 use std::fmt;
-
+use std::ops::Mul;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Color {
@@ -41,15 +41,69 @@ impl PartialEq for Color {
     }
 }
 
+impl Mul<f64> for Color {
+    type Output = Color;
+
+    fn mul(self, other: f64) -> Color {
+        let r = (self.r as f64) * other;
+        let g = (self.g as f64) * other;
+        let b = (self.b as f64) * other;
+
+        Color {
+            r: clamp(r, 0.0, 255.0) as u8,
+            g: clamp(g, 0.0, 255.0) as u8,
+            b: clamp(b, 0.0, 255.0) as u8,
+        }
+    }
+}
+
+impl Mul<Color> for f64 {
+    type Output = Color;
+
+    fn mul(self, other: Color) -> Color {
+        let r = self * (other.r as f64);
+        let g = self * (other.g as f64);
+        let b = self * (other.b as f64);
+
+        Color {
+            r: clamp(r, 0.0, 255.0) as u8,
+            g: clamp(g, 0.0, 255.0) as u8,
+            b: clamp(b, 0.0, 255.0) as u8,
+        }
+    }
+}
+
 impl fmt::Display for Color {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{} {} {}", self.r, self.g, self.b)
     }
 }
 
+fn clamp<T>(val: T, min: T, max: T) -> T
+where T: PartialOrd
+{
+    if val < min {
+        min
+    } else if val > max {
+        max
+    } else {
+        val
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_clamp_f64() {
+        let min = 0.0f64;
+        let max = 255.0f64;
+
+        assert_eq!(clamp(-1.0, min , max), min);
+        assert_eq!(clamp(127.0, min, max), 127.0);
+        assert_eq!(clamp(256.0, min, max), max);
+    }
 
     #[test]
     fn test_color_eq() {
@@ -75,7 +129,22 @@ mod tests {
 
     #[test]
     #[should_panic(expected = "out of range")]
-    fn test_color_from_range() {
+    fn test_color_from_float() {
         let _c = Color::from_float(1.1, 0.5, 0.5);
+    }
+
+    #[test]
+    fn test_color_mul_scalar() {
+        let c = Color::new(16, 32, 64);
+        let m: f64 = 2.0;
+        let d: f64 = 0.5;
+
+        assert_eq!(c * m, Color::new(32, 64, 128));
+        assert_eq!(m * c, Color::new(32, 64, 128));
+        assert_eq!(c * d, Color::new(8, 16, 32));
+        assert_eq!(d * c, Color::new(8, 16, 32));
+
+        assert_eq!(16.0f64 * c, Color::new(255, 255, 255));
+        assert_eq!(-1.0 * c, Color::new(0, 0, 0));
     }
 }
