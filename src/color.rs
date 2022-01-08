@@ -72,4 +72,10 @@ mod tests {
         let c = Color { r: 16, g: 32, b: 64 };
         assert_eq!(format!("{}", c), "16 32 64");
     }
+
+    #[test]
+    #[should_panic("out of range")]
+    fn test_color_from_range() {
+        let c = Color::from_float(1.1, 0.5, 0.5);
+    }
 }
