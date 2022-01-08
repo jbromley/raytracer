@@ -1,7 +1,4 @@
-use crate::color::Color;
-
-mod color;
-mod vec;
+use raytracer::color::Color;
 
 fn main() {
     let image_width = 256;
