@@ -1,4 +1,15 @@
 use raytracer::color::Color;
+use raytracer::ray::Ray;
+
+fn ray_color(r: Ray) -> Color {
+    let unit_dir = r.direction.normalize();
+    let t = 0.5 * (unit_dir.y + 1.0);
+
+    Color::from_float(
+        (1.0 - t) + t * 0.5,
+        (1.0 - t) + t * 0.7,
+        (1.0 - t) + t)
+}
 
 fn main() {
     let image_width = 256;
