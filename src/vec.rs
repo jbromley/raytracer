@@ -16,7 +16,7 @@ impl Vector {
         Vector { x, y, z, }
     }
 
-    pub fn zero() -> Vector {
+    pub fn origin() -> Vector {
         Vector { x: 0.0, y: 0.0, z: 0.0, }
     }
 
@@ -171,7 +171,7 @@ mod tests  {
 
     #[test]
     fn test_vec_zero() {
-        let zero = Vector::zero();
+        let zero = Vector::origin();
         assert_eq!(zero.x, 0.0);
         assert_eq!(zero.y, 0.0);
         assert_eq!(zero.z, 0.0);
