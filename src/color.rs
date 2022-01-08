@@ -33,6 +33,14 @@ impl Color {
             b: (max * b) as u8,
         }
     }
+
+    pub fn white() -> Color {
+        Color {
+            r: 255,
+            g: 255,
+            b: 255,
+        }
+    }
 }
 
 impl PartialEq for Color {
