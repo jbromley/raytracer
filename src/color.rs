@@ -74,8 +74,8 @@ mod tests {
     }
 
     #[test]
-    #[should_panic("out of range")]
+    #[should_panic(expected = "out of range")]
     fn test_color_from_range() {
-        let c = Color::from_float(1.1, 0.5, 0.5);
+        let _c = Color::from_float(1.1, 0.5, 0.5);
     }
 }
