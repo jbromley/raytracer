@@ -6,9 +6,9 @@ use assert_approx_eq::assert_approx_eq;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Vector {
-    x: f64,
-    y: f64,
-    z: f64,
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
 }
 
 impl Vector {
@@ -18,18 +18,6 @@ impl Vector {
 
     pub fn zero() -> Vector {
         Vector { x: 0.0, y: 0.0, z: 0.0, }
-    }
-
-    pub fn x(&self) -> f64 {
-        self.x
-    }
-
-    pub fn y(&self) -> f64 {
-        self.y
-    }
-
-    pub fn z(&self) -> f64 {
-        self.z
     }
 
     pub fn length_squared(&self) -> f64 {
@@ -45,15 +33,15 @@ impl Vector {
     }
 
     pub fn cross(&self, other: &Vector) -> Vector {
-        Vector::new(self.y * other.z() - self.z * other.y(),
-                    self.z * other.x() - self.x * other.z(),
-                    self.x * other.y() - self.y * other.x(),)
+        Vector::new(self.y * other.z - self.z * other.y,
+                    self.z * other.x - self.x * other.z,
+                    self.x * other.y - self.y * other.x,)
     }
 
     pub fn distance(&self, other: &Vector) -> f64 {
-        let dx = self.x - other.x();
-        let dy = self.y - other.y();
-        let dz = self.z - other.z();
+        let dx = self.x - other.x;
+        let dy = self.y - other.y;
+        let dz = self.z - other.z;
         (dx * dx + dy * dy + dz * dz).sqrt()
     }
 }
@@ -63,9 +51,9 @@ impl Add for Vector {
 
     fn add(self, other: Vector) -> Vector {
         Vector {
-            x: self.x + other.x(),
-            y: self.y + other.y(),
-            z: self.z + other.z(),
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
         }
     }
 }
@@ -75,9 +63,9 @@ impl Sub for Vector {
 
     fn sub(self, other: Vector) -> Vector {
         Vector {
-            x: self.x - other.x(),
-            y: self.y - other.y(),
-            z: self.z - other.z(),
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
         }
     }
 }
@@ -99,9 +87,9 @@ impl Mul<Vector> for Vector {
 
     fn mul(self, other: Vector) -> Vector {
         Vector {
-            x: self.x * other.x(),
-            y: self.y * other.y(),
-            z: self.z * other.z(),
+            x: self.x * other.x,
+            y: self.y * other.y,
+            z: self.z * other.z,
         }
     }
 }
@@ -111,9 +99,9 @@ impl Mul<Vector> for f64 {
 
     fn mul(self, other: Vector) -> Vector {
         Vector {
-            x: self * other.x(),
-            y: self * other.y(),
-            z: self * other.z(),
+            x: self * other.x,
+            y: self * other.y,
+            z: self * other.z,
         }
     }
 }
@@ -135,9 +123,9 @@ impl Div<Vector> for Vector {
 
     fn div(self, other: Vector) -> Vector {
         Vector {
-            x: self.x / other.x(),
-            y: self.y / other.y(),
-            z: self.z / other.z(),
+            x: self.x / other.x,
+            y: self.y / other.y,
+            z: self.z / other.z,
         }
     }
 }
@@ -156,7 +144,7 @@ impl Div<f64> for Vector {
 
 impl PartialEq for Vector {
     fn eq(&self, other: &Vector) -> bool {
-        self.x == other.x() && self.y == other.y() && self.z == other.z()
+        self.x == other.x && self.y == other.y && self.z == other.z
     }
 }
 
@@ -167,22 +155,22 @@ mod tests  {
     #[test]
     fn test_new() {
         let v = Vector { x: 0.1, y: 0.2, z: 0.3, };
-        assert_eq!(v.x(), 0.1);
-        assert_eq!(v.y(), 0.2);
-        assert_eq!(v.z(), 0.3);
+        assert_eq!(v.x, 0.1);
+        assert_eq!(v.y, 0.2);
+        assert_eq!(v.z, 0.3);
 
         let w = Vector::new(0.4, 0.5, 0.6);
-        assert_eq!(w.x(), 0.4);
-        assert_eq!(w.y(), 0.5);
-        assert_eq!(w.z(), 0.6);
+        assert_eq!(w.x, 0.4);
+        assert_eq!(w.y, 0.5);
+        assert_eq!(w.z, 0.6);
     }
 
     #[test]
     fn test_zero() {
         let zero = Vector::zero();
-        assert_eq!(zero.x(), 0.0);
-        assert_eq!(zero.y(), 0.0);
-        assert_eq!(zero.z(), 0.0);
+        assert_eq!(zero.x, 0.0);
+        assert_eq!(zero.y, 0.0);
+        assert_eq!(zero.z, 0.0);
     }
 
     #[test]
@@ -214,9 +202,9 @@ mod tests  {
             y: 0.3 * 0.4 - 0.1 * 0.6,
             z: 0.1 * 0.5 - 0.2 * 0.4,
         };
-        assert_approx_eq!(pxq.x(), expected.x());
-        assert_approx_eq!(pxq.y(), expected.y());
-        assert_approx_eq!(pxq.z(), expected.z());
+        assert_approx_eq!(pxq.x, expected.x);
+        assert_approx_eq!(pxq.y, expected.y);
+        assert_approx_eq!(pxq.z, expected.z);
     }
 
     #[test]

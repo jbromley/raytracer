@@ -30,12 +30,12 @@ mod tests {
 
         let r = Ray::new(v1, v2);
 
-        assert_approx_eq!(r.origin.x(), 0.1);
-        assert_approx_eq!(r.origin.y(), 0.2);
-        assert_approx_eq!(r.origin.z(), 0.3);
-        assert_approx_eq!(r.direction.x(), 0.2);
-        assert_approx_eq!(r.direction.y(), 0.3);
-        assert_approx_eq!(r.direction.z(), 0.4);
+        assert_approx_eq!(r.origin.x, 0.1);
+        assert_approx_eq!(r.origin.y, 0.2);
+        assert_approx_eq!(r.origin.z, 0.3);
+        assert_approx_eq!(r.direction.x, 0.2);
+        assert_approx_eq!(r.direction.y, 0.3);
+        assert_approx_eq!(r.direction.z, 0.4);
     }
 
     #[test]
