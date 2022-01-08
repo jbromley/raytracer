@@ -44,6 +44,10 @@ impl Vector {
         let dz = self.z - other.z;
         (dx * dx + dy * dy + dz * dz).sqrt()
     }
+
+    pub fn normalize(&self) -> Vector {
+        *self / self.length()
+    }
 }
 
 impl Add for Vector {
@@ -153,7 +157,7 @@ mod tests  {
     use super::*;
 
     #[test]
-    fn test_new() {
+    fn test_vec_new() {
         let v = Vector { x: 0.1, y: 0.2, z: 0.3, };
         assert_eq!(v.x, 0.1);
         assert_eq!(v.y, 0.2);
@@ -166,7 +170,7 @@ mod tests  {
     }
 
     #[test]
-    fn test_zero() {
+    fn test_vec_zero() {
         let zero = Vector::zero();
         assert_eq!(zero.x, 0.0);
         assert_eq!(zero.y, 0.0);
@@ -174,26 +178,26 @@ mod tests  {
     }
 
     #[test]
-    fn test_length_squared() {
+    fn test_vec_length_squared() {
         let p = Vector::new(3.0, 4.0, 5.0);
         assert_approx_eq!(p.length_squared(), 3.0 * 3.0 + 4.0 * 4.0 + 5.0 * 5.0);
     }
 
     #[test]
-    fn test_length() {
+    fn test_vec_length() {
         let p = Vector::new(1.0, 2.0, 3.0);
         assert_approx_eq!(p.length(), (1.0 + 4.0 + 9.0 as f64).sqrt());
     }
 
     #[test]
-    fn test_dot() {
+    fn test_vec_dot() {
         let p = Vector::new(0.1, 0.2, 0.3);
         let q = Vector::new(0.4, 0.5, 0.6);
         assert_approx_eq!(p.dot(&q), 0.1 * 0.4 + 0.2 * 0.5 + 0.3 * 0.6);
     }
 
     #[test]
-    fn test_cross() {
+    fn test_vec_cross() {
         let p = Vector::new(0.1, 0.2, 0.3);
         let q = Vector::new(0.4, 0.5, 0.6);
         let pxq = p.cross(&q);
@@ -208,7 +212,7 @@ mod tests  {
     }
 
     #[test]
-    fn test_distance() {
+    fn test_vec_distance() {
         let p = Vector::new(0.1, 0.2, 0.3);
         let q = Vector::new(0.6, 0.5, 0.4);
         let d = p.distance(&q);
@@ -217,41 +221,41 @@ mod tests  {
     }
 
     #[test]
-    fn test_partial_eq() {
+    fn test_vec_partial_eq() {
         let v1 = Vector::new(1.0, 2.0, 3.0);
         let v2 = Vector::new(1.0, 2.0, 3.0);
         assert_eq!(v1, v2);
     }
 
     #[test]
-    fn test_add() {
+    fn test_vec_add() {
         let v1 = Vector::new(1.0, 2.0, 3.0);
         let v2 = Vector::new(4.0, 3.0, 2.0);
         assert_eq!(v1 + v2, Vector::new(5.0, 5.0, 5.0));
     }
 
     #[test]
-    fn test_sub() {
+    fn test_vec_sub() {
         let v1 = Vector::new(5.0, 4.0, 3.0);
         let v2 = Vector::new(4.0, 3.0, 2.0);
         assert_eq!(v1 - v2, Vector::new(1.0, 1.0, 1.0));
     }
 
     #[test]
-    fn test_neg() {
+    fn test_vec_neg() {
         let v1 = Vector::new(1.0, 1.0, 1.0);
         assert_eq!(-v1, Vector::new(-1.0, -1.0, -1.0));
     }
 
     #[test]
-    fn test_mul_vector() {
+    fn test_vec_mul_vector() {
         let v1 = Vector::new(1.0, 2.0, 3.0);
         let v2 = Vector::new(4.0, 5.0, 6.0);
         assert_eq!(v1 * v2, Vector::new(4.0, 10.0, 18.0));
     }
 
     #[test]
-    fn test_mul_scalar() {
+    fn test_vec_mul_scalar() {
         let v1 = Vector::new(1.0, 2.0, 3.0);
         let s: f64 = 2.5;
         let expected = Vector::new(2.5, 5.0, 7.5);
@@ -260,17 +264,32 @@ mod tests  {
     }
 
     #[test]
-    fn test_div_vector() {
+    fn test_vec_div_vector() {
         let v1 = Vector::new(1.0, 2.0, 3.0);
         let v2 = Vector::new(4.0, 8.0, 6.0);
         assert_eq!(v1 / v2, Vector::new(0.25, 0.25, 0.5));
     }
 
     #[test]
-    fn test_div_scalar() {
+    fn test_vec_div_scalar() {
         let v1 = Vector::new(1.0, 2.0, 3.0);
         let s: f64 = 2.0;
         let expected = Vector::new(0.5, 1.0, 1.5);
         assert_eq!(v1 / s, expected);
+    }
+
+    #[test]
+    fn test_vec_normalize() {
+        let v = Vector::new(1.0, 2.0, 3.0);
+        let vn = v.normalize();
+
+        let l = (1.0f64 + 4.0f64 + 9.0f64).sqrt();
+        let expected = Vector::new(1.0 / l, 2.0 / l, 3.0 / l);
+
+        assert_approx_eq!(vn.x, expected.x);
+        assert_approx_eq!(vn.y, expected.y);
+        assert_approx_eq!(vn.z, expected.z);
+
+        assert_approx_eq!(vn.length(), 1.0);
     }
 }
