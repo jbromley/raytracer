@@ -1,6 +1,6 @@
 use std::cmp::PartialEq;
 use std::fmt;
-use std::ops::Mul;
+use std::ops::{Add, Mul};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Color {
@@ -34,6 +34,22 @@ impl Color {
         }
     }
 
+    pub fn lerp(start_color: Color, end_color: Color, t: f64) -> Color {
+        if t < 0.0 || t > 1.0 {
+            panic!("lerp: t = {} out of range", t);
+        }
+
+        (1.0 - t) * start_color + t * end_color
+    }
+
+    pub fn black() -> Color {
+        Color {
+            r: 0,
+            g: 0,
+            b: 0,
+        }
+    }
+
     pub fn white() -> Color {
         Color {
             r: 255,
@@ -46,6 +62,18 @@ impl Color {
 impl PartialEq for Color {
     fn eq(&self, other: &Color) -> bool {
         self.r == other.r && self.g == other.g && self.b == other.b
+    }
+}
+
+impl Add for Color {
+    type Output = Color;
+
+    fn add(self, other: Color) -> Color {
+        Color {
+            r: add_no_overflow(self.r, other.r),
+            g: add_no_overflow(self.g, other.g),
+            b: add_no_overflow(self.b, other.b),
+        }
     }
 }
 
@@ -99,6 +127,13 @@ where T: PartialOrd
     }
 }
 
+fn add_no_overflow(val1: u8, val2: u8) -> u8 {
+    match val1.checked_add(val2) {
+        Some(v) => v,
+        None => u8::MAX,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -111,6 +146,12 @@ mod tests {
         assert_eq!(clamp(-1.0, min , max), min);
         assert_eq!(clamp(127.0, min, max), 127.0);
         assert_eq!(clamp(256.0, min, max), max);
+    }
+
+    #[test]
+    fn test_add_no_overflow() {
+        assert_eq!(add_no_overflow(128u8, 64u8), 192u8);
+        assert_eq!(add_no_overflow(128u8, 128u8), 255u8)
     }
 
     #[test]
@@ -139,6 +180,16 @@ mod tests {
     #[should_panic(expected = "out of range")]
     fn test_color_from_float() {
         let _c = Color::from_float(1.1, 0.5, 0.5);
+    }
+
+    #[test]
+    fn test_color_add() {
+        let c1 = Color::new(128, 128, 128);
+        let c2 = Color::new(16, 32, 64);
+        let c3 = Color::new(144, 144, 144);
+
+        assert_eq!(c1 + c2, Color::new(144, 160, 192));
+        assert_eq!(c1 + c3, Color::white());
     }
 
     #[test]
