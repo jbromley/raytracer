@@ -29,7 +29,7 @@ impl Hittable for Sphere {
                 if t_min < *root && * root < t_max {
                     let p = ray.at(*root);
                     let normal = (p - self.center) / self.radius;
-                    return Some(HitRecord::new(p, normal, *root))
+                    return Some(HitRecord::from_ray(*ray, normal, *root))
                 }
             }
         }

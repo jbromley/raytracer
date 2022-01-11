@@ -24,11 +24,23 @@ pub struct HitRecord {
     pub p: Vector,
     pub n: Vector,
     pub t: f64,
+    pub front_face: bool,
 }
 
 impl HitRecord {
-    pub fn new(p: Vector, n: Vector, t: f64) -> HitRecord {
-        HitRecord { p, n, t, }
+    pub fn new(p: Vector, n: Vector, t: f64, front_face: bool) -> HitRecord {
+        HitRecord { p, n, t, front_face, }
+    }
+
+    pub fn from_ray(r: Ray, outward_normal: Vector, t: f64) -> HitRecord {
+        let front_face = r.direction * outward_normal < 0.0;
+        let normal = if front_face { outward_normal } else { -outward_normal };
+        HitRecord {
+            p: r.at(t),
+            n: normal,
+            t,
+            front_face,
+        }
     }
 }
 
