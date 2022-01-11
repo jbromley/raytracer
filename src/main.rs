@@ -1,13 +1,13 @@
 use raytracer::color::Color;
-use raytracer::ray::Ray;
+use raytracer::ray::{Hittable, Ray};
 use raytracer::sphere::Sphere;
 use raytracer::vec::Vector;
 
 fn ray_color(r: Ray) -> Color {
     let sphere = Sphere::new(Vector::new(0.0, 0.0, -1.0), 0.5);
-    match sphere.hit(&r) {
-        Some(t) => {
-            let n = (r.at(t) - sphere.center).normalize();
+    match sphere.hit(&r, 0.0, f64::INFINITY) {
+        Some(hit_record) => {
+            let n = (hit_record.p - sphere.center).normalize();
             Color::from_normal(&n)
         },
         None => {

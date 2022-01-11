@@ -19,6 +19,23 @@ impl Ray {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
+pub struct HitRecord {
+    pub p: Vector,
+    pub n: Vector,
+    pub t: f64,
+}
+
+impl HitRecord {
+    pub fn new(p: Vector, n: Vector, t: f64) -> HitRecord {
+        HitRecord { p, n, t, }
+    }
+}
+
+pub trait Hittable {
+    fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
