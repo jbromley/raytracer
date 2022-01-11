@@ -28,10 +28,6 @@ impl Vector {
         self.length_squared().sqrt()
     }
 
-    pub fn dot(&self, other: &Vector) -> f64 {
-        self.x * other.x + self.y * other.y + self.z * other.z
-    }
-
     pub fn cross(&self, other: &Vector) -> Vector {
         Vector::new(self.y * other.z - self.z * other.y,
                     self.z * other.x - self.x * other.z,
@@ -87,14 +83,10 @@ impl Neg for Vector {
 }
 
 impl Mul<Vector> for Vector {
-    type Output = Vector;
+    type Output = f64;
 
-    fn mul(self, other: Vector) -> Vector {
-        Vector {
-            x: self.x * other.x,
-            y: self.y * other.y,
-            z: self.z * other.z,
-        }
+    fn mul(self, other: Vector) -> f64 {
+        self.x * other.x + self.y * other.y + self.z * other.z
     }
 }
 
@@ -190,13 +182,6 @@ mod tests  {
     }
 
     #[test]
-    fn test_vec_dot() {
-        let p = Vector::new(0.1, 0.2, 0.3);
-        let q = Vector::new(0.4, 0.5, 0.6);
-        assert_approx_eq!(p.dot(&q), 0.1 * 0.4 + 0.2 * 0.5 + 0.3 * 0.6);
-    }
-
-    #[test]
     fn test_vec_cross() {
         let p = Vector::new(0.1, 0.2, 0.3);
         let q = Vector::new(0.4, 0.5, 0.6);
@@ -249,9 +234,17 @@ mod tests  {
 
     #[test]
     fn test_vec_mul_vector() {
-        let v1 = Vector::new(1.0, 2.0, 3.0);
-        let v2 = Vector::new(4.0, 5.0, 6.0);
-        assert_eq!(v1 * v2, Vector::new(4.0, 10.0, 18.0));
+        let p = Vector::new(1.0, 0.0, 0.0);
+        let q = Vector::new(0.0, 1.0, 0.0);
+        assert_approx_eq!(p * q, 0.0);
+
+        let p = Vector::new(2.0, 0.0, 0.0);
+        let q = Vector::new(2.0, 0.0, 0.0);
+        assert_approx_eq!(p * q, 4.0);
+
+        let p = Vector::new(0.1, 0.2, 0.3);
+        let q = Vector::new(0.4, 0.5, 0.6);
+        assert_approx_eq!(p * q, 0.1 * 0.4 + 0.2 * 0.5 + 0.3 * 0.6);
     }
 
     #[test]
