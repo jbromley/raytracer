@@ -1,18 +1,24 @@
 use raytracer::color::Color;
 use raytracer::ray::Ray;
+use raytracer::sphere::Sphere;
 use raytracer::vec::Vector;
 
 fn ray_color(r: Ray) -> Color {
+    let sphere = Sphere::new(Vector::new(0.0, 0.0, -1.0), 0.5);
+
+    if sphere.hit(&r) {
+        return Color::new(255, 0, 0)
+    }
+
     let unit_dir = r.direction.normalize();
     let t = 0.5 * (unit_dir.y + 1.0);
-
     Color::lerp(Color::white(), Color::new(127, 178, 255), t)
 }
 
 fn main() {
     // Image
     let aspect_ratio: f64 = 16.0 / 9.0;
-    let image_width = 400;
+    let image_width = 800;
     let image_height = ((image_width as f64) / aspect_ratio) as i32;
 
     // Camera
