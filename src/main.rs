@@ -5,14 +5,17 @@ use raytracer::vec::Vector;
 
 fn ray_color(r: Ray) -> Color {
     let sphere = Sphere::new(Vector::new(0.0, 0.0, -1.0), 0.5);
-
-    if sphere.hit(&r) {
-        return Color::new(255, 0, 0)
+    match sphere.hit(&r) {
+        Some(t) => {
+            let n = (r.at(t) - sphere.center).normalize();
+            Color::from_normal(&n)
+        },
+        None => {
+            let unit_dir = r.direction.normalize();
+            let t = 0.5 * (unit_dir.y + 1.0);
+            Color::lerp(Color::white(), Color::new(127, 178, 255), t)
+        }
     }
-
-    let unit_dir = r.direction.normalize();
-    let t = 0.5 * (unit_dir.y + 1.0);
-    Color::lerp(Color::white(), Color::new(127, 178, 255), t)
 }
 
 fn main() {
