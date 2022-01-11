@@ -2,6 +2,8 @@ use std::cmp::PartialEq;
 use std::fmt;
 use std::ops::{Add, Mul};
 
+use crate::vec::Vector;
+
 #[derive(Debug, Clone, Copy)]
 pub struct Color {
     r: u8,
@@ -19,10 +21,10 @@ impl Color {
             panic!("Color r out of range: {}", r);
         }
         if g < 0.0 || g > 1.0 {
-            panic!("Color g out of range: {}", r);
+            panic!("Color g out of range: {}", g);
         }
         if b < 0.0 || b > 1.0 {
-            panic!("Color b out of range: {}", r);
+            panic!("Color b out of range: {}", b);
         }
 
         let max = 255.0;
@@ -32,6 +34,13 @@ impl Color {
             g: (max * g) as u8,
             b: (max * b) as u8,
         }
+    }
+
+    pub fn from_normal(n: &Vector) -> Color {
+        let r = 0.5 * (n.x + 1.0);
+        let g = 0.5 * (n.y + 1.0);
+        let b = 0.5 * (n.z + 1.0);
+        Color::from_float(r, g, b)
     }
 
     pub fn lerp(start_color: Color, end_color: Color, t: f64) -> Color {
@@ -168,6 +177,22 @@ mod tests {
         let b = 1.0;
         let c = Color::from_float(r, g, b);
         assert_eq!(c, Color::new(0, 127, 255));
+    }
+
+    #[test]
+    fn test_color_from_normal() {
+        let n = Vector::new(1.0, 0.0, 0.0);
+        assert_eq!(Color::from_normal(&n), Color::new(255, 127, 127));
+
+        let n = Vector::new(-1.0, 1.0, 0.0);
+        assert_eq!(Color::from_normal(&n), Color::new(0, 255, 127));
+
+        let n = Vector::new(0.0, -1.0, 1.0);
+        assert_eq!(Color::from_normal(&n), Color::new(127, 0, 255));
+
+        let d = 2.0f64.sqrt() / 2.0;
+        let n = Vector::new(d, d, 0.0);
+        assert_eq!(Color::from_normal(&n), Color { r: 217, g: 217, b: 127, })
     }
 
     #[test]
