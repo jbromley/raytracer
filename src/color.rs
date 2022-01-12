@@ -1,6 +1,6 @@
 use std::cmp::PartialEq;
 use std::fmt;
-use std::ops::{Add, Mul, Div};
+use std::ops::{Add, AddAssign, Mul, Div, DivAssign};
 use float_cmp::approx_eq;
 
 use crate::vec::Vector;
@@ -57,6 +57,16 @@ impl Add for Color {
     }
 }
 
+impl AddAssign for Color {
+    fn add_assign(&mut self, other: Self) {
+        *self = Self {
+            r: self.r + other.r,
+            g: self.g + other.g,
+            b: self.b + other.b,
+        };
+    }
+}
+
 impl Mul<f64> for Color {
     type Output = Color;
 
@@ -88,6 +98,17 @@ impl Div<f64> for Color {
         let b = self.b / other;
         Color {r, g, b, }
     }
+}
+
+impl DivAssign<f64> for Color {
+    fn div_assign(&mut self, other: f64) {
+        *self = Self {
+            r: self.r / other,
+            g: self.g / other,
+            b: self.b / other,
+        };
+    }
+
 }
 
 impl fmt::Display for Color {
@@ -168,6 +189,16 @@ mod tests {
     }
 
     #[test]
+    fn test_color_add_assign() {
+        let mut c = Color::new(0.5, 0.5, 0.5);
+        let other_c = Color::new(0.0625, 0.125, 0.25);
+
+        c += other_c;
+        assert_eq!(c, Color::new(0.5625, 0.625, 0.75));
+
+    }
+
+    #[test]
     fn test_color_mul_scalar() {
         let c = Color::new(0.2, 0.4, 0.5);
         let m: f64 = 2.0;
@@ -183,6 +214,14 @@ mod tests {
     fn test_color_div() {
         let c = Color::new(0.2, 0.5, 0.8) / 2.0;
         let expected = Color::new(0.1, 0.25, 0.4);
+        assert!(c == expected);
+    }
+
+    #[test]
+    fn test_color_div_assign() {
+        let mut c = Color::new(0.2, 0.5, 0.8);
+        let expected = Color::new(0.1, 0.25, 0.4);
+        c /= 2.0;
         assert!(c == expected);
     }
 }
