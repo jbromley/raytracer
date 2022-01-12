@@ -71,3 +71,37 @@ fn main() {
     eprintln!("done.");
     eprintln!("{} ms elapsed", start.elapsed().as_millis());
 }
+
+#[cfg(test)]
+mod tests {
+    use raytracer::camera::Camera;
+    use super::*;
+
+    #[test]
+    fn test_hit_world() {
+        let camera = Camera::new();
+        let world = vec![
+            Sphere::new(Vector::new(0.0, 0.0, -1.0), 0.5),
+            Sphere::new(Vector::new(0.0, 0.0, -2.0), 0.5),
+        ];
+        let expected = HitRecord {
+            p: Vector::new(0.0, 0.0, -0.5),
+            n: Vector::new(0.0, 0.0, 1.0),
+            t: 0.5,
+            front_face: true,
+        };
+        let ray = camera.get_ray(0.5, 0.5);
+        let hit_record = hit_world(&world, &ray, 0.0, f64::INFINITY).expect("no hit record returned");
+        assert!(hit_record.p == expected.p);
+        assert!(hit_record.n == expected.n);
+        assert!(hit_record.t == 0.5);
+        assert!(hit_record.front_face);
+
+        let ray = camera.get_ray(0.0, 0.0);
+        let hit_record = hit_world(&world, &camera.get_ray(0.0, 0.0), 0.0, f64::INFINITY);
+        match hit_record {
+            Some(_hit) => panic!("ray {:?} should not have hit", ray),
+            None => (),
+        }
+    }
+}
