@@ -13,6 +13,9 @@ pub struct Color {
 }
 
 impl Color {
+    pub const BLACK: Color = Color { r: 0.0, g: 0.0, b: 0.0, };
+    pub const WHITE: Color = Color { r: 1.0, g: 1.0, b: 1.0, };
+
     pub fn new(r: f64, g: f64, b: f64) -> Color {
         Color { r, g, b, }
     }
@@ -30,22 +33,6 @@ impl Color {
         }
 
         (1.0 - t) * start_color + t * end_color
-    }
-
-    pub fn black() -> Color {
-        Color {
-            r: 0.0,
-            g: 0.0,
-            b: 0.0,
-        }
-    }
-
-    pub fn white() -> Color {
-        Color {
-            r: 1.0,
-            g: 1.0,
-            b: 1.0,
-        }
     }
 }
 
