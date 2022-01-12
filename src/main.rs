@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use raytracer::color::Color;
 use raytracer::ray::{Hittable, Ray, HitRecord};
 use raytracer::sphere::Sphere;
@@ -34,7 +36,7 @@ fn hit_world(world: &Vec<Sphere>, r: &Ray, t_min: f64, t_max: f64) -> Option<Hit
 fn main() {
     // Image
     let aspect_ratio: f64 = 16.0 / 9.0;
-    let image_width = 800;
+    let image_width = 1600;
     let image_height = ((image_width as f64) / aspect_ratio) as i32;
 
     // World
@@ -53,6 +55,8 @@ fn main() {
     let lower_left = Vector::origin() - horiz / 2.0 - vert / 2.0 - Vector::new(0.0, 0.0, focal_length);
 
     // Render
+    eprint!("Rendering {} x {}", image_width, image_height);
+    let start = Instant::now();
     println!("P3\n{} {}\n255", image_width, image_height);
 
     for y in (0..image_height).rev() {
@@ -63,6 +67,10 @@ fn main() {
             let c = ray_color(r, &world);
             println!("{}", c);
         }
-        eprintln!("{} scan lines remaining", y);
+        if y % 10 == 0 {
+            eprint!(".");
+        }
     }
+    eprintln!("done.");
+    eprintln!("{} ms elapsed", start.elapsed().as_millis());
 }
