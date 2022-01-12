@@ -4,6 +4,7 @@ use raytracer::sphere::Sphere;
 use raytracer::vec::Vector;
 
 fn ray_color(r: Ray) -> Color {
+    let bg_color = Color::new(0.5, 0.7, 1.0);
     let sphere = Sphere::new(Vector::new(0.0, 0.0, -1.0), 0.5);
     match sphere.hit(&r, 0.0, f64::INFINITY) {
         Some(hit_record) => {
@@ -13,7 +14,7 @@ fn ray_color(r: Ray) -> Color {
         None => {
             let unit_dir = r.direction.normalize();
             let t = 0.5 * (unit_dir.y + 1.0);
-            Color::lerp(Color::white(), Color::new(127, 178, 255), t)
+            Color::lerp(Color::white(), bg_color, t)
         }
     }
 }

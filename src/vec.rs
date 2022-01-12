@@ -2,7 +2,7 @@ use std::cmp::PartialEq;
 use std::ops::{Add, Sub, Neg, Mul, Div };
 
 #[cfg(test)]
-use assert_approx_eq::assert_approx_eq;
+use float_cmp::assert_approx_eq;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Vector {
@@ -172,13 +172,13 @@ mod tests  {
     #[test]
     fn test_vec_length_squared() {
         let p = Vector::new(3.0, 4.0, 5.0);
-        assert_approx_eq!(p.length_squared(), 3.0 * 3.0 + 4.0 * 4.0 + 5.0 * 5.0);
+        assert_approx_eq!(f64, p.length_squared(), 3.0 * 3.0 + 4.0 * 4.0 + 5.0 * 5.0);
     }
 
     #[test]
     fn test_vec_length() {
         let p = Vector::new(1.0, 2.0, 3.0);
-        assert_approx_eq!(p.length(), (1.0 + 4.0 + 9.0 as f64).sqrt());
+        assert_approx_eq!(f64, p.length(), (1.0 + 4.0 + 9.0 as f64).sqrt());
     }
 
     #[test]
@@ -191,9 +191,9 @@ mod tests  {
             y: 0.3 * 0.4 - 0.1 * 0.6,
             z: 0.1 * 0.5 - 0.2 * 0.4,
         };
-        assert_approx_eq!(pxq.x, expected.x);
-        assert_approx_eq!(pxq.y, expected.y);
-        assert_approx_eq!(pxq.z, expected.z);
+        assert_approx_eq!(f64, pxq.x, expected.x);
+        assert_approx_eq!(f64, pxq.y, expected.y);
+        assert_approx_eq!(f64, pxq.z, expected.z);
     }
 
     #[test]
@@ -202,7 +202,7 @@ mod tests  {
         let q = Vector::new(0.6, 0.5, 0.4);
         let d = p.distance(&q);
         let expected = (0.25 + 0.09 + 0.01 as f64).sqrt();
-        assert_approx_eq!(d, expected);
+        assert_approx_eq!(f64, d, expected);
     }
 
     #[test]
@@ -236,15 +236,15 @@ mod tests  {
     fn test_vec_mul_vector() {
         let p = Vector::new(1.0, 0.0, 0.0);
         let q = Vector::new(0.0, 1.0, 0.0);
-        assert_approx_eq!(p * q, 0.0);
+        assert_approx_eq!(f64, p * q, 0.0);
 
         let p = Vector::new(2.0, 0.0, 0.0);
         let q = Vector::new(2.0, 0.0, 0.0);
-        assert_approx_eq!(p * q, 4.0);
+        assert_approx_eq!(f64, p * q, 4.0);
 
         let p = Vector::new(0.1, 0.2, 0.3);
         let q = Vector::new(0.4, 0.5, 0.6);
-        assert_approx_eq!(p * q, 0.1 * 0.4 + 0.2 * 0.5 + 0.3 * 0.6);
+        assert_approx_eq!(f64, p * q, 0.1 * 0.4 + 0.2 * 0.5 + 0.3 * 0.6);
     }
 
     #[test]
@@ -279,10 +279,10 @@ mod tests  {
         let l = (1.0f64 + 4.0f64 + 9.0f64).sqrt();
         let expected = Vector::new(1.0 / l, 2.0 / l, 3.0 / l);
 
-        assert_approx_eq!(vn.x, expected.x);
-        assert_approx_eq!(vn.y, expected.y);
-        assert_approx_eq!(vn.z, expected.z);
+        assert_approx_eq!(f64, vn.x, expected.x);
+        assert_approx_eq!(f64, vn.y, expected.y);
+        assert_approx_eq!(f64, vn.z, expected.z);
 
-        assert_approx_eq!(vn.length(), 1.0);
+        assert_approx_eq!(f64, vn.length(), 1.0);
     }
 }
