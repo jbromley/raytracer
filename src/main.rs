@@ -1,3 +1,4 @@
+use rand::distributions::{Distribution, Uniform};
 use std::time::Instant;
 
 use raytracer::camera::Camera;
@@ -34,8 +35,13 @@ fn hit_world(world: &Vec<Sphere>, r: &Ray, t_min: f64, t_max: f64) -> Option<Hit
 fn main() {
     // Image
     let aspect_ratio: f64 = 16.0 / 9.0;
-    let image_width = 1600;
+    let image_width = 800;
     let image_height = ((image_width as f64) / aspect_ratio) as i32;
+    let samples_per_pixel = 64;
+
+    // Random number generator
+    let mut rng = rand::thread_rng();
+    let dist = Uniform::new(-0.5, 0.5);
 
     // World
     let world  = vec![
@@ -53,10 +59,14 @@ fn main() {
 
     for y in (0..image_height).rev() {
         for x in 0..image_width {
-            let u = x as f64 / (image_width - 1) as f64;
-            let v = y as f64 / (image_height - 1) as f64;
-            let r = camera.get_ray(u, v);
-            let c = ray_color(r, &world);
+            let mut c = Color::BLACK;
+            for _ in 0..samples_per_pixel {
+                let u = ((x as f64) + dist.sample(&mut rng)) / (image_width - 1) as f64;
+                let v = ((y as f64) + dist.sample(&mut rng)) / (image_height - 1) as f64;
+                let r = camera.get_ray(u, v);
+                c += ray_color(r, &world);
+            }
+            c /= samples_per_pixel as f64;
             println!("{}", c);
         }
         if y % 10 == 0 {
