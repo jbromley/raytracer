@@ -1,6 +1,6 @@
 use std::cmp::PartialEq;
 use std::fmt;
-use std::ops::{Add, Mul};
+use std::ops::{Add, Mul, Div};
 use float_cmp::approx_eq;
 
 use crate::vec::Vector;
@@ -76,6 +76,17 @@ impl Mul<Color> for f64 {
         let g = self * other.g;
         let b = self * other.b;
         Color { r, g, b, }
+    }
+}
+
+impl Div<f64> for Color {
+    type Output = Color;
+
+    fn div(self, other: f64) -> Color {
+        let r = self.r / other;
+        let g = self.g / other;
+        let b = self.b / other;
+        Color {r, g, b, }
     }
 }
 
@@ -166,5 +177,12 @@ mod tests {
         assert_eq!(m * c, Color::new(0.4, 0.8, 1.0));
         assert_eq!(c * d, Color::new(0.1, 0.2, 0.25));
         assert_eq!(d * c, Color::new(0.1, 0.2, 0.25));
+    }
+
+    #[test]
+    fn test_color_div() {
+        let c = Color::new(0.2, 0.5, 0.8) / 2.0;
+        let expected = Color::new(0.1, 0.25, 0.4);
+        assert!(c == expected);
     }
 }
