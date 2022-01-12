@@ -8,7 +8,6 @@ use raytracer::vec::Vector;
 fn ray_color(r: Ray, world: &Vec<Sphere>) -> Color {
     let bg_color = Color::new(0.5, 0.7, 1.0);
 
-
     match hit_world(world, &r, 0.0, f64::INFINITY) {
         Some(hit_record) => {
             Color::from_normal(&hit_record.n)
@@ -16,7 +15,7 @@ fn ray_color(r: Ray, world: &Vec<Sphere>) -> Color {
         None => {
             let unit_dir = r.direction.normalize();
             let t = 0.5 * (unit_dir.y + 1.0);
-            Color::lerp(Color::white(), bg_color, t)
+            Color::lerp(Color::WHITE, bg_color, t)
         }
     }
 }
@@ -52,7 +51,7 @@ fn main() {
 
     let horiz = Vector::new(viewport_width, 0.0, 0.0);
     let vert = Vector::new(0.0, viewport_height, 0.0);
-    let lower_left = Vector::origin() - horiz / 2.0 - vert / 2.0 - Vector::new(0.0, 0.0, focal_length);
+    let lower_left = Vector::ORIGIN - horiz / 2.0 - vert / 2.0 - Vector::new(0.0, 0.0, focal_length);
 
     // Render
     eprint!("Rendering {} x {}", image_width, image_height);
@@ -63,7 +62,7 @@ fn main() {
         for x in 0..image_width {
             let u = x as f64 / (image_width - 1) as f64;
             let v = y as f64 / (image_height - 1) as f64;
-            let r = Ray::new(Vector::origin(), lower_left + u * horiz + v * vert - Vector::origin());
+            let r = Ray::new(Vector::ORIGIN, lower_left + u * horiz + v * vert - Vector::ORIGIN);
             let c = ray_color(r, &world);
             println!("{}", c);
         }
