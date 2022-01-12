@@ -1,5 +1,6 @@
 use std::time::Instant;
 
+use raytracer::camera::Camera;
 use raytracer::color::Color;
 use raytracer::ray::{Hittable, Ray, HitRecord};
 use raytracer::sphere::Sphere;
@@ -43,13 +44,7 @@ fn main() {
     ];
 
     // Camera
-    let viewport_height = 2.0;
-    let viewport_width = aspect_ratio * viewport_height;
-    let focal_length = 1.0;
-
-    let horiz = Vector::new(viewport_width, 0.0, 0.0);
-    let vert = Vector::new(0.0, viewport_height, 0.0);
-    let lower_left = Vector::ORIGIN - horiz / 2.0 - vert / 2.0 - Vector::new(0.0, 0.0, focal_length);
+    let camera = Camera::new();
 
     // Render
     eprint!("Rendering {} x {}", image_width, image_height);
@@ -60,7 +55,7 @@ fn main() {
         for x in 0..image_width {
             let u = x as f64 / (image_width - 1) as f64;
             let v = y as f64 / (image_height - 1) as f64;
-            let r = Ray::new(Vector::ORIGIN, lower_left + u * horiz + v * vert - Vector::ORIGIN);
+            let r = camera.get_ray(u, v);
             let c = ray_color(r, &world);
             println!("{}", c);
         }
