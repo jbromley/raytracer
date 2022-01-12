@@ -12,12 +12,10 @@ pub struct Vector {
 }
 
 impl Vector {
+    pub const ORIGIN: Vector = Vector { x: 0.0, y: 0.0, z: 0.0, };
+
     pub fn new(x: f64, y: f64, z: f64) -> Vector {
         Vector { x, y, z, }
-    }
-
-    pub fn origin() -> Vector {
-        Vector { x: 0.0, y: 0.0, z: 0.0, }
     }
 
     pub fn length_squared(&self) -> f64 {
@@ -159,14 +157,6 @@ mod tests  {
         assert_eq!(w.x, 0.4);
         assert_eq!(w.y, 0.5);
         assert_eq!(w.z, 0.6);
-    }
-
-    #[test]
-    fn test_vec_zero() {
-        let zero = Vector::origin();
-        assert_eq!(zero.x, 0.0);
-        assert_eq!(zero.y, 0.0);
-        assert_eq!(zero.z, 0.0);
     }
 
     #[test]
