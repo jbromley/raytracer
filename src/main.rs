@@ -1,4 +1,5 @@
 use rand::distributions::{Distribution, Uniform};
+use raytracer::image::ImagePpm;
 use std::time::Instant;
 
 use raytracer::camera::Camera;
@@ -35,8 +36,8 @@ fn hit_world(world: &Vec<Sphere>, r: &Ray, t_min: f64, t_max: f64) -> Option<Hit
 fn main() {
     // Image
     let aspect_ratio: f64 = 16.0 / 9.0;
-    let image_width = 800;
-    let image_height = ((image_width as f64) / aspect_ratio) as i32;
+    let image_width: u32 = 800;
+    let image_height: u32 = ((image_width as f64) / aspect_ratio) as u32;
     let samples_per_pixel = 64;
 
     // Random number generator
@@ -55,9 +56,9 @@ fn main() {
     // Render
     eprint!("Rendering {} x {}", image_width, image_height);
     let start = Instant::now();
-    println!("P3\n{} {}\n255", image_width, image_height);
+    let mut img = ImagePpm::new(image_width, image_height);
 
-    for y in (0..image_height).rev() {
+    for y in 0..image_height {
         for x in 0..image_width {
             let mut c = Color::BLACK;
             for _ in 0..samples_per_pixel {
@@ -67,12 +68,15 @@ fn main() {
                 c += ray_color(r, &world);
             }
             c /= samples_per_pixel as f64;
-            println!("{}", c);
+            img.set_pixel(x, y, c);
         }
         if y % 10 == 0 {
             eprint!(".");
         }
     }
+
+    print!("{}", img);
+
     eprintln!("done.");
     eprintln!("{} ms elapsed", start.elapsed().as_millis());
 }
