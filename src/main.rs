@@ -1,9 +1,12 @@
+use std::sync::Arc;
+use std::sync::mpsc::channel;
 use rand::distributions::{Distribution, Uniform};
-use raytracer::image::ImagePpm;
 use std::time::Instant;
+use threadpool::ThreadPool;
 
 use raytracer::camera::Camera;
 use raytracer::color::Color;
+use raytracer::image::ImagePpm;
 use raytracer::ray::{Hittable, Ray, HitRecord};
 use raytracer::sphere::Sphere;
 use raytracer::vec::Vector;
@@ -36,41 +39,58 @@ fn hit_world(world: &Vec<Sphere>, r: &Ray, t_min: f64, t_max: f64) -> Option<Hit
 fn main() {
     // Image
     let aspect_ratio: f64 = 16.0 / 9.0;
-    let image_width: u32 = 800;
+    let image_width: u32 = 6400;
     let image_height: u32 = ((image_width as f64) / aspect_ratio) as u32;
     let samples_per_pixel = 64;
 
     // Random number generator
-    let mut rng = rand::thread_rng();
+    // let mut rng = rand::thread_rng();
     let dist = Uniform::new(-0.5, 0.5);
 
     // World
-    let world  = vec![
+    let world  = Arc::new(vec![
         Sphere::new(Vector::new(0.0, 0.0, -1.0), 0.5),
         Sphere::new(Vector::new(0.0, -100.5, -1.0), 100.0),
-    ];
+    ]);
 
     // Camera
     let camera = Camera::new();
 
     // Render
+    let pool = ThreadPool::new(num_cpus::get());
+    let (tx, rx) = channel();
+
     eprint!("Rendering {} x {}", image_width, image_height);
     let start = Instant::now();
     let mut img = ImagePpm::new(image_width, image_height);
 
     for y in 0..image_height {
-        for x in 0..image_width {
-            let mut c = Color::BLACK;
-            for _ in 0..samples_per_pixel {
-                let u = ((x as f64) + dist.sample(&mut rng)) / (image_width - 1) as f64;
-                let v = ((y as f64) + dist.sample(&mut rng)) / (image_height - 1) as f64;
-                let r = camera.get_ray(u, v);
-                c += ray_color(r, &world);
+        let tx = tx.clone();
+        let w = Arc::clone(&world);
+        pool.execute(move || {
+            let mut rng = rand::thread_rng();
+            for x in 0..image_width {
+                let mut c = Color::BLACK;
+                for _ in 0..samples_per_pixel {
+                    let u = ((x as f64) + dist.sample(&mut rng)) / (image_width - 1) as f64;
+                    let v = ((y as f64) + dist.sample(&mut rng)) / (image_height - 1) as f64;
+                    let r = camera.get_ray(u, v);
+
+                    c += ray_color(r, &w);
+                }
+                c /= samples_per_pixel as f64;
+                tx.send((x, y, c)).expect("Could not set pixel data");
             }
-            c /= samples_per_pixel as f64;
-            img.set_pixel(x, y, c);
-        }
-        if y % 10 == 0 {
+        });
+    }
+    drop(tx);
+
+    let progress_period = image_width * image_height / 40;
+    let mut num_pixels = 0;
+    for (x, y, pixel) in rx.iter() {
+        img.set_pixel(x, y, pixel);
+        num_pixels += 1;
+        if num_pixels % progress_period == 0 {
             eprint!(".");
         }
     }
