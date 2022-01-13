@@ -75,10 +75,10 @@ fn main() {
         }
     }
 
-    print!("{}", img);
-
     eprintln!("done.");
     eprintln!("{} ms elapsed", start.elapsed().as_millis());
+
+    print!("{}", img);
 }
 
 #[cfg(test)]
