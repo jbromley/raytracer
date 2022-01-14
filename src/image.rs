@@ -1,6 +1,8 @@
 use std::fmt;
+use std::io::{Write, BufWriter};
 
 use crate::color::Color;
+
 
 pub struct ImagePpm {
     pub width: u32,
@@ -35,14 +37,39 @@ impl ImagePpm {
         let index = (self.width * y + x) as usize;
         self.data[index]
     }
+
+    pub fn write(&self) -> Result<(), std::io::Error> {
+        let stdout = std::io::stdout();
+        let mut stdout = BufWriter::new(stdout.lock());
+
+        stdout.write_all(format!("P3\n{} {}\n255\n", self.width, self.height).as_bytes())?;
+
+        let mut pixel = 0;
+        for y in (0..self.height - 1).rev() {
+            for x in 0..self.width {
+                stdout.write(format!("{} ", self.get_pixel(x, y)).as_bytes())?;
+                pixel += 1;
+                if pixel % 5 == 0 {
+                    stdout.write(b"\n")?;
+                }
+            }
+        }
+        Ok(())
+    }
 }
 
 impl fmt::Display for ImagePpm {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut pixel = 0;
+
         write!(f, "P3\n{} {}\n255\n", self.width, self.height)?;
         for y in (0..self.height - 1).rev() {
             for x in 0..self.width {
-                write!(f, "{}\n", self.get_pixel(x, y))?;
+                write!(f, "{} ", self.get_pixel(x, y))?;
+                pixel += 1;
+                if pixel % 5 == 0 {
+                    write!(f, "\n")?;
+                }
             }
         }
         Ok(())

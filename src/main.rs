@@ -39,7 +39,7 @@ fn hit_world(world: &Vec<Sphere>, r: &Ray, t_min: f64, t_max: f64) -> Option<Hit
 fn main() {
     // Image
     let aspect_ratio: f64 = 16.0 / 9.0;
-    let image_width: u32 = 1600;
+    let image_width: u32 = 6400;
     let image_height: u32 = ((image_width as f64) / aspect_ratio) as u32;
     let samples_per_pixel = 64;
 
@@ -99,8 +99,10 @@ fn main() {
 
     let start = Instant::now();
     eprint!("Writing image...");
-    print!("{}", img);
-    eprintln!("done in {} ms.", start.elapsed().as_millis());
+    match img.write() {
+        Ok(_) => eprintln!("done in {} ms.", start.elapsed().as_millis()),
+        Err(e) => eprintln!("error writing image: {}", e),
+    };
 }
 
 #[cfg(test)]
