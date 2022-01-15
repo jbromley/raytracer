@@ -11,17 +11,19 @@ use raytracer::ray::{Hittable, Ray, HitRecord};
 use raytracer::sphere::Sphere;
 use raytracer::vec::Vector;
 
-fn ray_color(r: Ray, world: &Vec<Sphere>) -> Color {
-    match hit_world(world, &r, 0.0, f64::INFINITY) {
-        Some(hit_record) => {
-            Color::from_normal(&hit_record.n)
-        },
-        None => {
-            let unit_dir = r.direction.normalize();
-            let t = 0.5 * (unit_dir.y + 1.0);
-            Color::lerp(Color::WHITE, Color::BACKGROUND, t)
-        }
+fn ray_color(r: Ray, world: &Vec<Sphere>, depth: u32) -> Color {
+    if depth == 0 {
+        return Color::BLACK;
     }
+
+    if let Some(hit) = hit_world(world, &r, 0.0, f64::INFINITY) {
+        let target = hit.p + hit.n + Vector::random_in_unit_sphere();
+        return 0.5 * ray_color(Ray::new(hit.p, target - hit.p), world, depth - 1)
+    }
+
+    let unit_dir = r.direction.normalize();
+    let t = 0.5 * (unit_dir.y + 1.0);
+    Color::lerp(Color::WHITE, Color::BACKGROUND, t)
 }
 
 fn hit_world(world: &Vec<Sphere>, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
@@ -42,6 +44,7 @@ fn main() {
     let image_width: u32 = 6400;
     let image_height: u32 = ((image_width as f64) / aspect_ratio) as u32;
     let samples_per_pixel = 64;
+    let max_depth = 32;
 
     // Random number generator
     // let mut rng = rand::thread_rng();
@@ -76,7 +79,7 @@ fn main() {
                     let v = ((y as f64) + dist.sample(&mut rng)) / (image_height - 1) as f64;
                     let r = camera.get_ray(u, v);
 
-                    c += ray_color(r, &w);
+                    c += ray_color(r, &w, max_depth);
                 }
                 c /= samples_per_pixel as f64;
                 tx.send((x, y, c)).expect("Could not set pixel data");
