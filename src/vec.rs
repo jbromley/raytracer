@@ -59,6 +59,15 @@ impl Vector {
     pub fn random_unit_vector() -> Vector {
         Vector::random_in_unit_sphere().normalize()
     }
+
+    pub fn random_in_hemisphere(normal: &Vector) -> Vector {
+        let v = Vector::random_in_unit_sphere();
+        if v * *normal > 0.0 {
+            v
+        } else {
+            -v
+        }
+    }
 }
 
 impl Add for Vector {
@@ -307,5 +316,20 @@ mod tests  {
             let v = Vector::random_unit_vector();
             assert_approx_eq!(f64, v.length(), 1.0f64);
         }
+    }
+
+    #[test]
+    fn test_vec_random_in_hemisphere() {
+        let normal = Vector::new(1.0, 1.0, 1.0).normalize();
+        let vi = Vector::random_in_hemisphere(&normal);
+        let vo = Vector::random_in_hemisphere(&-normal);
+        assert!(vi * normal > 0.0);
+        assert!(vo * normal < 0.0);
+
+        let normal = Vector::new(-1.0, -1.0, -1.0).normalize();
+        let vi = Vector::random_in_hemisphere(&normal);
+        let vo = Vector::random_in_hemisphere(&-normal);
+        assert!(vi * normal > 0.0);
+        assert!(vo * normal < 0.0);
     }
 }
