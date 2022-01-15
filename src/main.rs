@@ -41,7 +41,7 @@ fn hit_world(world: &Vec<Sphere>, r: &Ray, t_min: f64, t_max: f64) -> Option<Hit
 fn main() {
     // Image
     let aspect_ratio: f64 = 16.0 / 9.0;
-    let image_width: u32 = 6400;
+    let image_width: u32 = 1600;
     let image_height: u32 = ((image_width as f64) / aspect_ratio) as u32;
     let samples_per_pixel = 64;
     let max_depth = 32;
@@ -82,13 +82,13 @@ fn main() {
                     c += ray_color(r, &w, max_depth);
                 }
                 c /= samples_per_pixel as f64;
-                tx.send((x, y, c)).expect("Could not set pixel data");
+                tx.send((x, y, c.gamma_correct())).expect("Could not set pixel data");
             }
         });
     }
     drop(tx);
 
-    let progress_period = image_width * image_height / 40;
+    let progress_period = image_width * image_height / 50;
     let mut num_pixels = 0;
     for (x, y, pixel) in rx.iter() {
         img.set_pixel(x, y, pixel);

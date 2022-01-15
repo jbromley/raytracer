@@ -35,6 +35,14 @@ impl Color {
 
         (1.0 - t) * start_color + t * end_color
     }
+
+    pub fn gamma_correct(&self) -> Color {
+        Color {
+            r: self.r.sqrt(),
+            g: self.g.sqrt(),
+            b: self.b.sqrt(),
+        }
+    }
 }
 
 impl PartialEq for Color {
@@ -223,5 +231,13 @@ mod tests {
         let expected = Color::new(0.1, 0.25, 0.4);
         c /= 2.0;
         assert!(c == expected);
+    }
+
+    #[test]
+    fn test_color_gamma_correct() {
+        let c = Color::new(0.1, 0.5, 1.0);
+        let cc = c.gamma_correct();
+        let expected = Color::new((0.1f64).sqrt(), (0.5f64).sqrt(), 1.0);
+        assert_eq!(expected, cc);
     }
 }
