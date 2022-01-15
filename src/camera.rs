@@ -33,6 +33,12 @@ impl Camera {
     }
 }
 
+impl Default for Camera {
+    fn default() -> Self {
+        Camera::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

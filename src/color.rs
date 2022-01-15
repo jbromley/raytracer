@@ -29,7 +29,7 @@ impl Color {
     }
 
     pub fn lerp(start_color: Color, end_color: Color, t: f64) -> Color {
-        if t < 0.0 || t > 1.0 {
+        if !(0.0..=1.0).contains(&t) {
             panic!("lerp: t = {} out of range", t);
         }
 

@@ -11,7 +11,7 @@ use raytracer::ray::{Hittable, Ray, HitRecord};
 use raytracer::sphere::Sphere;
 use raytracer::vec::Vector;
 
-fn ray_color(r: Ray, world: &Vec<Sphere>, depth: u32) -> Color {
+fn ray_color(r: Ray, world: &[Sphere], depth: u32) -> Color {
     if depth == 0 {
         return Color::BLACK;
     }
@@ -27,7 +27,7 @@ fn ray_color(r: Ray, world: &Vec<Sphere>, depth: u32) -> Color {
     Color::lerp(Color::WHITE, Color::BACKGROUND, t)
 }
 
-fn hit_world(world: &Vec<Sphere>, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+fn hit_world(world: &[Sphere], r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
     let mut closest = t_max;
     let mut hit_record = None;
     for sphere in world {

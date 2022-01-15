@@ -47,10 +47,10 @@ impl ImagePpm {
         let mut pixel = 0;
         for y in (0..self.height - 1).rev() {
             for x in 0..self.width {
-                stdout.write(format!("{} ", self.get_pixel(x, y)).as_bytes())?;
+                stdout.write_all(format!("{} ", self.get_pixel(x, y)).as_bytes())?;
                 pixel += 1;
                 if pixel % 5 == 0 {
-                    stdout.write(b"\n")?;
+                    stdout.write_all(b"\n")?;
                 }
             }
         }
@@ -68,7 +68,7 @@ impl fmt::Display for ImagePpm {
                 write!(f, "{} ", self.get_pixel(x, y))?;
                 pixel += 1;
                 if pixel % 5 == 0 {
-                    write!(f, "\n")?;
+                    writeln!(f)?;
                 }
             }
         }
