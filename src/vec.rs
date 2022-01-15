@@ -55,6 +55,10 @@ impl Vector {
         let c: f64 = rng.gen_range(0.0..1.0);
         v * c.cbrt()
     }
+
+    pub fn random_unit_vector() -> Vector {
+        Vector::random_in_unit_sphere().normalize()
+    }
 }
 
 impl Add for Vector {
@@ -290,10 +294,18 @@ mod tests  {
     }
 
     #[test]
-    fn test_vec_random_unit() {
+    fn test_vec_random_in_unit_sphere() {
         for _ in 0..100 {
             let v = Vector::random_in_unit_sphere();
             assert!(v.length() < 1.0f64);
+        }
+    }
+
+    #[test]
+    fn test_vec_random_unit() {
+        for _ in 0..100 {
+            let v = Vector::random_unit_vector();
+            assert_approx_eq!(f64, v.length(), 1.0f64);
         }
     }
 }
