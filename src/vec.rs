@@ -1,5 +1,7 @@
 use std::cmp::PartialEq;
 use std::ops::{Add, Sub, Neg, Mul, Div };
+use rand::Rng;
+use rand::distributions::{Distribution, Uniform};
 
 #[cfg(test)]
 use float_cmp::assert_approx_eq;
@@ -41,6 +43,17 @@ impl Vector {
 
     pub fn normalize(&self) -> Vector {
         *self / self.length()
+    }
+
+    pub fn random_in_unit_sphere() -> Vector {
+        let mut rng = rand::thread_rng();
+        let dist = Uniform::new(-1.0, 1.0);
+        let v = Vector::new(
+            dist.sample(&mut rng),
+            dist.sample(&mut rng),
+            dist.sample(&mut rng)).normalize();
+        let c: f64 = rng.gen_range(0.0..1.0);
+        v * c.cbrt()
     }
 }
 
@@ -274,5 +287,13 @@ mod tests  {
         assert_approx_eq!(f64, vn.z, expected.z);
 
         assert_approx_eq!(f64, vn.length(), 1.0);
+    }
+
+    #[test]
+    fn test_vec_random_unit() {
+        for _ in 0..100 {
+            let v = Vector::random_in_unit_sphere();
+            assert!(v.length() < 1.0f64);
+        }
     }
 }
