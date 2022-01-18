@@ -39,10 +39,29 @@ fn hit_world(world: &[Sphere], r: &Ray, t_min: f64, t_max: f64) -> Option<HitRec
     hit_record
 }
 
+fn show_help(prog: &str) {
+    let help_text = format!("Render a scene with the raytracer.\
+                             \
+                             USAGE:\
+                             \t{} [OPTIONS] OUTPUT_FILE\
+                             \
+                             OPTIONS:\
+                             \
+                             -w <WIDTH>     Pixel width of the image\
+                             -h <HEIGHT>    Pixel height of the image\
+                             -s <SAMPLES>   Number of antialiasing samples per pixel\
+                             -m <MAXDEPTH>  Maximum depth for reflections\
+                             -h             Prints help information\
+                             \
+                             If only one of the width or height is specified, the default aspect ration of\
+                             16:9 is used.", prog);
+    eprintln!("{}", help_text);
+}
+
 fn main() {
     // Image
     let aspect_ratio: f64 = 16.0 / 9.0;
-    let image_width: u32 = 1600;
+    let image_width: u32 = 6400;
     let image_height: u32 = ((image_width as f64) / aspect_ratio) as u32;
     let samples_per_pixel = 64;
     let max_depth = 32;
