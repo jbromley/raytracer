@@ -1,3 +1,4 @@
+use std::fs::File;
 use std::fmt;
 use std::io::{Write, BufWriter};
 
@@ -39,19 +40,17 @@ impl ImagePpm {
     }
 
     pub fn write(&self) -> Result<(), std::io::Error> {
-        let stdout = std::io::stdout();
-        let mut stdout = BufWriter::new(stdout.lock());
+        let file = match File::create("test.ppm") {
+            Ok(f) => f,
+            Err(why) => return Err(why),
+        };
+        let mut file = BufWriter::new(file);
 
-        stdout.write_all(format!("P3\n{} {}\n255\n", self.width, self.height).as_bytes())?;
+        file.write_all(format!("P6\n{} {}\n255\n", self.width, self.height).as_bytes())?;
 
-        let mut pixel = 0;
         for y in (0..self.height - 1).rev() {
             for x in 0..self.width {
-                stdout.write_all(format!("{} ", self.get_pixel(x, y)).as_bytes())?;
-                pixel += 1;
-                if pixel % 5 == 0 {
-                    stdout.write_all(b"\n")?;
-                }
+                file.write_all(&self.get_pixel(x, y).as_bytes())?;
             }
         }
         Ok(())

@@ -43,6 +43,13 @@ impl Color {
             b: self.b.sqrt(),
         }
     }
+
+    pub fn as_bytes(&self) -> [u8; 3] {
+        let r = (clamp(self.r, 0.0, 1.0) * 255.0) as u8;
+        let g = (clamp(self.g, 0.0, 1.0) * 255.0) as u8;
+        let b = (clamp(self.b, 0.0, 1.0) * 255.0) as u8;
+        [r, g, b]
+    }
 }
 
 impl PartialEq for Color {
