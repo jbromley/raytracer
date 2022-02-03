@@ -1,3 +1,6 @@
+use raytracer::config::Config;
+use std::env;
+use std::process;
 use std::sync::Arc;
 use std::sync::mpsc::channel;
 use rand::distributions::{Distribution, Uniform};
@@ -11,7 +14,7 @@ use raytracer::ray::{Hittable, Ray, HitRecord};
 use raytracer::sphere::Sphere;
 use raytracer::vec::Vector;
 
-fn ray_color(r: Ray, world: &[Sphere], depth: u32) -> Color {
+fn ray_color(r: Ray, world: &[Sphere], depth: u16) -> Color {
     if depth == 0 {
         return Color::BLACK;
     }
@@ -39,35 +42,43 @@ fn hit_world(world: &[Sphere], r: &Ray, t_min: f64, t_max: f64) -> Option<HitRec
     hit_record
 }
 
-fn show_help(prog: &str) {
-    let help_text = format!("Render a scene with the raytracer.\
-                             \
-                             USAGE:\
-                             \t{} [OPTIONS] OUTPUT_FILE\
-                             \
-                             OPTIONS:\
-                             \
-                             -w <WIDTH>     Pixel width of the image\
-                             -h <HEIGHT>    Pixel height of the image\
-                             -s <SAMPLES>   Number of antialiasing samples per pixel\
-                             -m <MAXDEPTH>  Maximum depth for reflections\
-                             -h             Prints help information\
-                             \
-                             If only one of the width or height is specified, the default aspect ration of\
-                             16:9 is used.", prog);
+fn show_help() {
+    let help_text = "\
+Render a scene with the raytracer.
+
+USAGE:
+ \traytracer [OPTIONS] OUTPUT_FILE
+
+OPTIONS:
+
+-w <WIDTH>     Pixel width of the image
+-h <HEIGHT>    Pixel height of the image
+-s <SAMPLES>   Number of antialiasing samples per pixel
+-m <MAXDEPTH>  Maximum depth for reflections
+-h             Prints help information
+
+If only one of the width or height is specified, the default aspect ration of
+16:9 is used.";
+
     eprintln!("{}", help_text);
 }
 
 fn main() {
-    // Image
-    let aspect_ratio: f64 = 16.0 / 9.0;
-    let image_width: u32 = 6400;
-    let image_height: u32 = ((image_width as f64) / aspect_ratio) as u32;
-    let samples_per_pixel = 64;
-    let max_depth = 32;
+    let args: Vec<String> = env::args().collect();
+    let cfg = match Config::parse_args(&args) {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("Error parsing arguments: {}", e);
+            Config::need_help()
+        },
+    };
+
+    if cfg.help {
+        show_help();
+        process::exit(1);
+    }
 
     // Random number generator
-    // let mut rng = rand::thread_rng();
     let dist = Uniform::new(-0.5, 0.5);
 
     // World
@@ -83,32 +94,32 @@ fn main() {
     let pool = ThreadPool::new(num_cpus::get());
     let (tx, rx) = channel();
 
-    eprint!("Rendering {} x {}", image_width, image_height);
+    eprint!("Rendering {} x {}", cfg.width, cfg.height);
     let start = Instant::now();
-    let mut img = ImagePpm::new(image_width, image_height);
+    let mut img = ImagePpm::new(cfg.width, cfg.height);
 
-    for y in 0..image_height {
+    for y in 0..cfg.height {
         let tx = tx.clone();
         let w = Arc::clone(&world);
         pool.execute(move || {
             let mut rng = rand::thread_rng();
-            for x in 0..image_width {
+            for x in 0..cfg.width {
                 let mut c = Color::BLACK;
-                for _ in 0..samples_per_pixel {
-                    let u = ((x as f64) + dist.sample(&mut rng)) / (image_width - 1) as f64;
-                    let v = ((y as f64) + dist.sample(&mut rng)) / (image_height - 1) as f64;
+                for _ in 0..cfg.samples {
+                    let u = ((x as f64) + dist.sample(&mut rng)) / (cfg.width - 1) as f64;
+                    let v = ((y as f64) + dist.sample(&mut rng)) / (cfg.height - 1) as f64;
                     let r = camera.get_ray(u, v);
 
-                    c += ray_color(r, &w, max_depth);
+                    c += ray_color(r, &w, cfg.max_depth);
                 }
-                c /= samples_per_pixel as f64;
+                c /= cfg.samples as f64;
                 tx.send((x, y, c.gamma_correct())).expect("Could not set pixel data");
             }
         });
     }
     drop(tx);
 
-    let progress_period = image_width * image_height / 50;
+    let progress_period = cfg.width * cfg.height / 50;
     let mut num_pixels = 0;
     for (x, y, pixel) in rx.iter() {
         img.set_pixel(x, y, pixel);
