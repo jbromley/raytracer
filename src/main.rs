@@ -132,8 +132,8 @@ fn main() {
     eprintln!("rendering done in {} ms.", start.elapsed().as_millis());
 
     let start = Instant::now();
-    eprint!("Writing image...");
-    match img.write() {
+    eprint!("Writing image to {}...", cfg.output);
+    match img.write(&cfg.output) {
         Ok(_) => eprintln!("done in {} ms.", start.elapsed().as_millis()),
         Err(e) => eprintln!("error writing image: {}", e),
     };
