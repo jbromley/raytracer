@@ -39,8 +39,8 @@ impl ImagePpm {
         self.data[index]
     }
 
-    pub fn write(&self) -> Result<(), std::io::Error> {
-        let file = match File::create("test.ppm") {
+    pub fn write(&self, filename: &str) -> Result<(), std::io::Error> {
+        let file = match File::create(filename) {
             Ok(f) => f,
             Err(why) => return Err(why),
         };
