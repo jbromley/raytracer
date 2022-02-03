@@ -48,7 +48,7 @@ impl ImagePpm {
 
         file.write_all(format!("P6\n{} {}\n255\n", self.width, self.height).as_bytes())?;
 
-        for y in (0..self.height - 1).rev() {
+        for y in (0..self.height).rev() {
             for x in 0..self.width {
                 file.write_all(&self.get_pixel(x, y).as_bytes())?;
             }
